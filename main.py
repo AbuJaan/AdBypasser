@@ -21,9 +21,10 @@ def random_celeb():
 
 
 st.title("URL Bypasser")
-tab1, tab2 = st.tabs(
+tab1, tab2, tab3 = st.tabs(
     [
         "Bypass",
+        "Batch Bypass",
         "Available Websites",
     ]
 )
@@ -33,58 +34,7 @@ banned_websites = [
 ]
 
 __avl_website__ = [
-    "try2link.com",
-    " adf.ly",
-    " bit.ly",
-    " ouo.io",
-    " ouo.press",
-    " shareus.in",
-    " shortly.xyz",
-    " tinyurl.com",
-    " thinfi.com",
-    " hypershort.com ",
-    "safeurl.sirigan.my.id",
-    " gtlinks.me",
-    " loan.kinemaster.cc",
-    " theforyou.in",
-    " shorte.st",
-    " earn4link.in",
-    " tekcrypt.in",
-    " link.short2url.in",
-    " go.rocklinks.net",
-    " rocklinks.net",
-    " earn.moneykamalo.com",
-    " m.easysky.in",
-    " indianshortner.in",
-    " open.crazyblog.in",
-    " link.tnvalue.in",
-    " shortingly.me",
-    " open2get.in",
-    " dulink.in",
-    " bindaaslinks.com",
-    " za.uy",
-    " pdiskshortener.com",
-    " mdiskshortner.link",
-    " go.earnl.xyz",
-    " g.rewayatcafe.com",
-    " ser2.crazyblog.in",
-    " bitshorten.com",
-    " rocklink.in",
-    " droplink.co",
-    " tnlink.in",
-    " ez4short.com",
-    " xpshort.com",
-    " vearnl.in",
-    " adrinolinks.in",
-    " techymozo.com",
-    " linkbnao.com",
-    " linksxyz.in",
-    " short-jambo.com",
-    " ads.droplink.co.in",
-    " linkpays.in",
-    " pi-l.ink",
-    " link.tnlink.in ",
-    " pkin.me",
+    # List of available websites
 ]
 
 with tab1:
@@ -117,10 +67,41 @@ with tab1:
                 show_alert = False
 
         elif show_alert := True:
-            st.error("No URLS found")
+            st.error("No URLs found")
 
 with tab2:
+    st.subheader("Batch Bypass")
+    urls = st.text_area(label="Paste your URLs (one per line)").strip().splitlines()
+    if st.button("Submit Batch"):
+        if urls:
+            bypassed_links = []
+            errors = []
+            for url in urls:
+                if any(banned in url for banned in banned_websites):
+                    errors.append(f"{url}: This website is not supported")
+                else:
+                    try:
+                        with st.spinner(f"Bypassing {url}..."):
+                            bypassed_link = bypasser.bypass(url)
+                            bypassed_links.append(bypassed_link)
+                    except (UnableToBypassError, BypasserNotFoundError, UrlConnectionError) as e:
+                        errors.append(f"{url}: {e}")
+
+            if bypassed_links:
+                st.success("Bypassed URLs:")
+                for link in bypassed_links:
+                    st.write(link)
+                random_celeb()
+
+            if errors:
+                st.error("Errors encountered:")
+                for error in errors:
+                    st.write(error)
+
+        else:
+            st.error("No URLs provided.")
+
+with tab3:
     st.subheader("Available Websites")
     st.table(__avl_website__)
-
 
